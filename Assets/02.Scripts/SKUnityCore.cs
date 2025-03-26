@@ -150,7 +150,7 @@ public class SKUnityCore : MonoBehaviour
     private Kernel ConfigureOpenAIKernel(IKernelBuilder builder, string apiKey)
     {
         builder.AddOpenAIChatCompletion(
-            modelId: "gpt-3.5-turbo",
+            modelId: "gpt-4o-mini",
             apiKey: apiKey
         );
         return builder.Build();
@@ -165,7 +165,7 @@ public class SKUnityCore : MonoBehaviour
     private Kernel ConfigureAzureOpenAIKernel(IKernelBuilder builder, string apiKey)
     {
         builder.AddAzureOpenAIChatCompletion(
-            deploymentName: "gpt-35-turbo",
+            deploymentName: "gpt-4o-mini",
             endpoint: _config.AzureOpenAIEndpoint,
             apiKey: apiKey
         );

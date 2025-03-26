@@ -154,13 +154,16 @@ public class SKUnityCoreConfigEditor : Editor
         EditorGUILayout.Space();
 
         // Key input field
-        EditorGUILayout.LabelField("API Key");
-        input = EditorGUILayout.PasswordField(input);
+        if (!hasKey)
+        {
+            EditorGUILayout.LabelField("API Key");
+            input = EditorGUILayout.PasswordField(input);
+        }
 
         // Buttons
         EditorGUILayout.BeginHorizontal();
 
-        if (GUILayout.Button("Save Key"))
+        if (!hasKey && GUILayout.Button("Save Key"))
         {
             if (!string.IsNullOrEmpty(input))
             {
