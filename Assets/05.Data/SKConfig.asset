@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 393ca04edbb0ea84392cc37669b60d02, type: 3}
   m_Name: SKConfig
   m_EditorClassIdentifier: 
-  _openAIKey: 
+  _openAIKey: SlpIFkEMWR83ZQRRZUheV1l1UiZkV1otXFRQVGpcexp5KAUCeQFgXFVAEiR4Wn1XJWBqUHsHfBBvW3I2YA58N0kCLDV5YEZaXydAC3d/blVeSTFVcQ9RWSd/ADxEA2A8enhfA09MXhgPEwEjQmtBDU0xSX5edQ8FSGYCAXIUYlM+bWknYFQAIV5CU1l1RgUuBwcgEHJ9c1FULVVWCw56dXVyLCc=
   _azureOpenAIKey: 
   _azureOpenAIEndpoint: 
   _anthropicKey: 
