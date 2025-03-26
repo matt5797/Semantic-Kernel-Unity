@@ -28,15 +28,23 @@ public class AIAgent : MonoBehaviour
     private string _currentRequestId;
     private bool _isProcessingRequest = false;
 
-    // Events
+    // Base events
     [SerializeField] private UnityEvent<string> _onResponseReceived;
     [SerializeField] private UnityEvent<string> _onProcessingStarted;
     [SerializeField] private UnityEvent<string> _onProcessingComplete;
     [SerializeField] private UnityEvent<string> _onError;
 
+    // Event Trigger system
+    [SerializeField] private AIEventTrigger _eventTrigger = new AIEventTrigger();
+
     // Public events for external subscribers
     public event Action<string> OnResponseReceived;
+    public event Action<string> OnProcessingStarted;
+    public event Action<string> OnProcessingComplete;
     public event Action<string> OnError;
+
+    // Keyword detection event
+    public event Action<string, string> OnKeywordDetected;
 
     /// <summary>
     /// Initialize agent components on Awake
@@ -68,6 +76,9 @@ public class AIAgent : MonoBehaviour
                 Debug.LogError($"AIAgent ({gameObject.name}): No SKUnityCore found in scene");
             }
         }
+
+        // Connect keyword detection event
+        _eventTrigger.OnAnyKeywordDetected += (keyword, response) => OnKeywordDetected?.Invoke(keyword, response);
     }
 
     /// <summary>
@@ -100,6 +111,7 @@ public class AIAgent : MonoBehaviour
         // Start processing
         _isProcessingRequest = true;
         _onProcessingStarted?.Invoke(input);
+        OnProcessingStarted?.Invoke(input);
 
         // Add user message to chat memory
         _chatMemory.AddMessage(ChatMemory.MessageRole.User, input);
@@ -128,14 +140,38 @@ public class AIAgent : MonoBehaviour
         // Add assistant response to chat memory
         _chatMemory.AddMessage(ChatMemory.MessageRole.Assistant, response);
 
-        // Trigger events
+        // Trigger response events
         _onResponseReceived?.Invoke(response);
-        _onProcessingComplete?.Invoke(response);
         OnResponseReceived?.Invoke(response);
+
+        // Process event triggers based on keywords
+        ProcessEventTriggers(response);
+
+        // Trigger completion events
+        _onProcessingComplete?.Invoke(response);
+        OnProcessingComplete?.Invoke(response);
 
         // Reset request state
         _isProcessingRequest = false;
         _currentRequestId = null;
+    }
+
+    /// <summary>
+    /// Process keyword-based event triggers
+    /// </summary>
+    /// <param name="response">Response text to check for keywords</param>
+    private void ProcessEventTriggers(string response)
+    {
+        if (string.IsNullOrEmpty(response))
+            return;
+
+        // Process through event trigger system
+        int keywordsDetected = _eventTrigger.ProcessResponse(response);
+
+        if (keywordsDetected > 0)
+        {
+            Debug.Log($"AIAgent ({gameObject.name}): Detected {keywordsDetected} keywords in response");
+        }
     }
 
     /// <summary>
@@ -150,6 +186,7 @@ public class AIAgent : MonoBehaviour
         _onError?.Invoke(errorMessage);
         _onProcessingComplete?.Invoke(string.Empty);
         OnError?.Invoke(errorMessage);
+        OnProcessingComplete?.Invoke(string.Empty);
 
         // Reset request state
         _isProcessingRequest = false;
@@ -183,6 +220,28 @@ public class AIAgent : MonoBehaviour
     }
 
     /// <summary>
+    /// Add a keyword rule to the event trigger system
+    /// </summary>
+    /// <param name="keyword">Keyword to detect</param>
+    /// <param name="caseSensitive">Whether to use case-sensitive matching</param>
+    /// <param name="callback">Action to call when keyword is detected</param>
+    public void AddKeywordRule(string keyword, bool caseSensitive, UnityAction<string> callback)
+    {
+        _eventTrigger.AddKeywordRule(keyword, caseSensitive, callback);
+    }
+
+    /// <summary>
+    /// Remove a keyword rule from the event trigger system
+    /// </summary>
+    /// <param name="keyword">Keyword to remove</param>
+    /// <param name="caseSensitive">Whether to use case-sensitive matching for removal</param>
+    /// <returns>True if rule was found and removed</returns>
+    public bool RemoveKeywordRule(string keyword, bool caseSensitive = false)
+    {
+        return _eventTrigger.RemoveKeywordRule(keyword, caseSensitive);
+    }
+
+    /// <summary>
     /// Check if agent is currently processing a request
     /// </summary>
     public bool IsProcessing => _isProcessingRequest;
@@ -208,4 +267,9 @@ public class AIAgent : MonoBehaviour
         _promptTemplate.SetVariable("character", _agentName);
         _promptTemplate.SetVariable("description", _agentDescription);
     }
+
+    /// <summary>
+    /// Access to the event trigger system
+    /// </summary>
+    public AIEventTrigger EventTrigger => _eventTrigger;
 }
