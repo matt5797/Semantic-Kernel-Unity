@@ -31,6 +31,8 @@ public class SKUnityCore : MonoBehaviour
     public event Action<string> OnResponseReceived;
     public event Action<Exception> OnRequestFailed;
 
+    public bool IsInitialized => _isInitialized;
+
     private void Awake()
     {
         // Auto-initialize if config is available
