@@ -333,7 +333,7 @@ public class AITestSceneSetup : EditorWindow
         GameObject eventTester = new GameObject("EventTester");
 
         // Add TriggerEventNode component
-        TriggerEventNode triggerNode = eventTester.AddComponent<TriggerEventNode>();
+        AIKeywordTrigger triggerNode = eventTester.AddComponent<AIKeywordTrigger>();
 
         // Set up references
         SerializedObject serializedTrigger = new SerializedObject(triggerNode);
@@ -341,12 +341,17 @@ public class AITestSceneSetup : EditorWindow
         agentProperty.objectReferenceValue = aiAgent.GetComponent<AIAgent>();
 
         // Set up keyword
-        var keywordProperty = serializedTrigger.FindProperty("_keywordToDetect");
+        // Using AIKeywordTrigger's property
+var keywordTriggers = serializedTrigger.FindProperty("_keywordTriggers");
+keywordTriggers.arraySize = 1;
+var firstTrigger = keywordTriggers.GetArrayElementAtIndex(0);
+var keywordProperty = firstTrigger.FindPropertyRelative("keyword");
         keywordProperty.stringValue = "hello";
 
         // Enable debug mode
-        var debugProperty = serializedTrigger.FindProperty("_debugMode");
-        debugProperty.boolValue = true;
+        // Debug mode not needed for AIKeywordTrigger
+// var debugProperty = serializedTrigger.FindProperty("_debugMode");
+        // debugProperty.boolValue = true;
 
         serializedTrigger.ApplyModifiedProperties();
 

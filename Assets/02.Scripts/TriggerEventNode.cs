@@ -1,6 +1,6 @@
 using UnityEngine;
 using System;
-
+/*
 /// <summary>
 /// Node for Visual Scripting that triggers events based on AI response keywords
 /// Can be connected to AIAgent to create game interactions based on AI responses
@@ -196,4 +196,4 @@ public class TriggerEventNode : MonoBehaviour
             Debug.LogWarning($"TriggerEventNode ({gameObject.name}): No keyword specified to detect");
         }
     }
-}
+}*/
